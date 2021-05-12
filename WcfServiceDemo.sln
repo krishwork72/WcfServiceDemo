@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfMessageInterceptorDemo", "WcfMessageInterceptor\WcfMessageInterceptorDemo.csproj", "{F47D7E1D-0083-431E-B24D-4F26BFF5F833}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfServiceDemo", "WcfServiceDemo\WcfServiceDemo.csproj", "{769770EC-1E47-45FF-A037-C96268CE94E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F47D7E1D-0083-431E-B24D-4F26BFF5F833}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F47D7E1D-0083-431E-B24D-4F26BFF5F833}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F47D7E1D-0083-431E-B24D-4F26BFF5F833}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F47D7E1D-0083-431E-B24D-4F26BFF5F833}.Release|Any CPU.Build.0 = Release|Any CPU
+		{769770EC-1E47-45FF-A037-C96268CE94E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{769770EC-1E47-45FF-A037-C96268CE94E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{769770EC-1E47-45FF-A037-C96268CE94E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{769770EC-1E47-45FF-A037-C96268CE94E2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4CF5521-8607-40C6-9819-8FE477AB71A3}
+	EndGlobalSection
+EndGlobal

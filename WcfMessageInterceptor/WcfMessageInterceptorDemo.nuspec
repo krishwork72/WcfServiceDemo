@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>WcfMessageInterceptor</id>
+    <version>1.0.0</version>
+    <title>WCF Message Interceptor</title>
+    <authors>Accolite Inc</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://accolite.com/</projectUrl>
+    <iconUrl>https://accolite.com/assets/jpg/logo.png</iconUrl>
+    <description>This library has use to WCF Message Interceptor by decorate CustomServiceBehavior attribute at service class lavel.</description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copy Right 2021</copyright>
+    <tags>WCF Message Interceptor Tag1 Tag2</tags>
+	<dependencies>
+		<dependency id="Newtonsoft.Json" version="13.0.1"/>
+	</dependencies>
+  </metadata>
+</package>
