@@ -73,7 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\HttpVerbs.cs" />
-    <Compile Include="CustomInspectorBehaviorExtension.cs" />
     <Compile Include="DataContracts\CompositeType.cs" />
     <Compile Include="DataContracts\Student.cs" />
     <Compile Include="ServiceContracts\ISampleService.cs" />
