@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using WcfMessageInterceptor;
-using WcfMessageInterceptorDemo;
 using WcfServiceDemo.DataContracts;
 using WcfServiceDemo.ServiceContracts;
 
 namespace WcfServiceDemo
 {
-    [CustomServiceBehavior(typeof(TestService))]
     public class TestService : ITestService
     {
         public List<Student> GetStudentDetails()
@@ -16,7 +13,6 @@ namespace WcfServiceDemo
             stuList.Add(new Student { ID = "123", Name = "Krishna" });
             return stuList;
         }
-        [CustomExcludeServiceBehavior]
         public string GetData(string value)
         {
             return string.Format("You entered: {0}", value);

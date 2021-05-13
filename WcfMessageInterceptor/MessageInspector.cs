@@ -5,19 +5,15 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Web;
-using System.Text;
 using System.Xml;
-using WcfMessageInterceptor;
-using WcfMessageInterceptorDemo.Models;
+using WcfMessageInterceptor.Configurations;
+using WcfMessageInterceptor.Models;
 
-namespace WcfMessageInterceptorDemo
+namespace WcfMessageInterceptor
 {
-    internal class MessageInspector : IDispatchMessageInspector
+    internal class MessageInspector : IDispatchMessageInspector, IClientMessageInspector
     {
-        private Type serviceType;
-        private bool ignoreMethod = false;
-        public MessageInspector(Type serviceType) => this.serviceType = serviceType;
-
+        private bool ignoreMethod = true;
         #region IDispatchMessageInspector Members
         public object AfterReceiveRequest(ref Message request, IClientChannel channel,
             InstanceContext instanceContext)
@@ -26,18 +22,19 @@ namespace WcfMessageInterceptorDemo
             var context = WebOperationContext.Current;
             try
             {
-                SetIgnoreMethod(context, buffer);
-                if (ignoreMethod && context != null)
+                CheckIgnoreMethod(context, buffer);
+                if (ignoreMethod)
                 {
-                    var requestModel = new RequestModel()
-                    {
-                        Url = GetRequestUrl(),
-                        Method = context.IncomingRequest.Method,
-                        Headers = GetHeaders(context),
-                        Payload = request.ToString()
-                    };
-                    LogWriter.Log(requestModel);
+                    return null;
                 }
+                var requestModel = new RequestModel()
+                {
+                    Url = GetRequestUrl(),
+                    Method = context.IncomingRequest.Method,
+                    Headers = GetHeaders(context),
+                    Payload = request.ToString()
+                };
+                LogWriter.Log(requestModel);
             }
             catch (Exception ex)
             {
@@ -45,7 +42,7 @@ namespace WcfMessageInterceptorDemo
             }
             finally
             {
-                ignoreMethod = false;
+                ignoreMethod = true;
                 request = buffer.CreateMessage();
             }
             return null;
@@ -57,19 +54,20 @@ namespace WcfMessageInterceptorDemo
             try
             {
                 var messageCopy = buffer.CreateMessage();
-                SetIgnoreMethod(context, buffer);
-                if (ignoreMethod && context != null)
+                CheckIgnoreMethod(context, buffer);
+                if (ignoreMethod)
                 {
-                    var responseModel = new RequestModel()
-                    {
-                        Url = GetRequestUrl(),
-                        Method = context.IncomingRequest.Method,
-                        StatusCode = context.OutgoingResponse.StatusCode,
-                        Headers = GetHeaders(context, true),
-                        Payload = messageCopy.ToString()
-                    };
-                    LogWriter.Log(responseModel);
+                    return;
                 }
+                var responseModel = new RequestModel()
+                {
+                    Url = GetRequestUrl(),
+                    Method = context.IncomingRequest.Method,
+                    StatusCode = context.OutgoingResponse.StatusCode,
+                    Headers = GetHeaders(context, true),
+                    Payload = messageCopy.ToString()
+                };
+                LogWriter.Log(responseModel);
             }
             catch (Exception ex)
             {
@@ -77,30 +75,27 @@ namespace WcfMessageInterceptorDemo
             }
             finally
             {
-                ignoreMethod = false;
+                ignoreMethod = true;
                 reply = buffer.CreateMessage();
             }
         }
         #endregion
         #region Exclude method to execution
-        private void SetIgnoreMethod(WebOperationContext context, MessageBuffer messageBuffer)
+        private void CheckIgnoreMethod(WebOperationContext context, MessageBuffer messageBuffer)
         {
-            if (serviceType == null)
+            var excludeSettings = ExcludeSettingFactory.ExcludeSettings;
+            if (excludeSettings.Count==0)
             {
-                ignoreMethod = true;
+                LogWriter.Log($"The exclude method setting count:{excludeSettings.Count}");
+                ignoreMethod = false;
                 return;
             }
-            var currentMethod = serviceType.GetMethod(GetMethodName(context, messageBuffer));
-            if (currentMethod == null)
+            string currentMethodName = GetMethodName(context, messageBuffer);
+            var ignoreMethodSetting = excludeSettings.FirstOrDefault(x=>
+                                x.MethodName.Equals(currentMethodName, StringComparison.OrdinalIgnoreCase));
+            if (ignoreMethodSetting == null)
             {
-                return;
-            }
-            var customExcludeAttribute = currentMethod.GetCustomAttributes(true)
-                                                      .OfType<CustomExcludeServiceBehaviorAttribute>()
-                             .FirstOrDefault();
-            if (customExcludeAttribute == null)
-            {
-                ignoreMethod = true;
+                ignoreMethod = false;
             }
         }
         private string GetMethodName(WebOperationContext context, MessageBuffer messageBuffer)
@@ -174,6 +169,16 @@ namespace WcfMessageInterceptorDemo
                
             }
             return result;
+        }
+
+        object IClientMessageInspector.BeforeSendRequest(ref Message request, IClientChannel channel)
+        {
+            return null;
+        }
+
+        void IClientMessageInspector.AfterReceiveReply(ref Message reply, object correlationState)
+        {
+            return;
         }
     }
 }

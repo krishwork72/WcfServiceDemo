@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace WcfMessageInterceptorDemo.Models
+namespace WcfMessageInterceptor.Models
 {
     public class RequestModel
     {

@@ -73,17 +73,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\HttpVerbs.cs" />
+    <Compile Include="CustomInspectorBehaviorExtension.cs" />
     <Compile Include="DataContracts\CompositeType.cs" />
     <Compile Include="DataContracts\Student.cs" />
     <Compile Include="ServiceContracts\ISampleService.cs" />
     <Compile Include="SampleService.svc.cs">
       <DependentUpon>SampleService.svc</DependentUpon>
     </Compile>
+    <Compile Include="ServiceContracts\ITestService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestService.svc.cs">
       <DependentUpon>TestService.svc</DependentUpon>
     </Compile>
-    <Compile Include="ServiceContracts\ITestService.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
