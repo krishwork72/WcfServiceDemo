@@ -37,6 +37,7 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
@@ -49,8 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomExcludeServiceBehaviorAttribute.cs" />
+    <Compile Include="Configurations\ExcludeCustomServiceBehavior.cs" />
+    <Compile Include="Configurations\ExcludeSettingFactory.cs" />
+    <Compile Include="CustomInspectorBehaviorExtension.cs" />
     <Compile Include="CustomServiceBehaviorAttribute.cs" />
+    <Compile Include="Configurations\GenericConfigurationElementCollection.cs" />
+    <Compile Include="Configurations\ExcludeSetting.cs" />
     <Compile Include="MessageInspector.cs" />
     <Compile Include="Models\HeaderModel.cs" />
     <Compile Include="Models\RequestModel.cs" />

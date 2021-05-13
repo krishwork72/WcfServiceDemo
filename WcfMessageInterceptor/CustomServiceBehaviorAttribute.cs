@@ -4,19 +4,12 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using WcfMessageInterceptor;
 
-namespace WcfMessageInterceptorDemo
+namespace WcfMessageInterceptor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple =true, Inherited =false)]
     public class CustomServiceBehaviorAttribute : Attribute, IServiceBehavior
     {
-        private Type serviceType;
-        public CustomServiceBehaviorAttribute():this(null)
-        {
-
-        }
-        public CustomServiceBehaviorAttribute(Type serviceType) => this.serviceType = serviceType;
         public void AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
         {
         }
@@ -30,7 +23,7 @@ namespace WcfMessageInterceptorDemo
                 {
                     foreach (EndpointDispatcher endpointDispatcher in channelDispatcher.Endpoints)
                     {
-                        MessageInspector inspector = new MessageInspector(serviceType);
+                        MessageInspector inspector = new MessageInspector();
                         endpointDispatcher.DispatchRuntime.MessageInspectors.Add(inspector);
                     }
                 }
