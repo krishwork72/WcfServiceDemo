@@ -5,7 +5,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 
-namespace WcfMessageInterceptor
+namespace MessageInterceptor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple =true, Inherited =false)]
     public class CustomServiceBehaviorAttribute : Attribute, IServiceBehavior

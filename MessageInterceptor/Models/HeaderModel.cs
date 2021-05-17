@@ -1,4 +1,4 @@
-﻿namespace WcfMessageInterceptor.Models
+﻿namespace MessageInterceptor.Models
 {
     public class HeaderModel
     {

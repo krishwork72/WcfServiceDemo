@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace WcfMessageInterceptor.Configurations
+namespace MessageInterceptor.Configurations
 {
     public class ExcludeCustomServiceBehavior : ConfigurationSection
     {
