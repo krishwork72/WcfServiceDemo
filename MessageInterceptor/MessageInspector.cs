@@ -6,10 +6,10 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using System.ServiceModel.Web;
 using System.Xml;
-using WcfMessageInterceptor.Configurations;
-using WcfMessageInterceptor.Models;
+using MessageInterceptor.Configurations;
+using MessageInterceptor.Models;
 
-namespace WcfMessageInterceptor
+namespace MessageInterceptor
 {
     internal class MessageInspector : IDispatchMessageInspector, IClientMessageInspector
     {

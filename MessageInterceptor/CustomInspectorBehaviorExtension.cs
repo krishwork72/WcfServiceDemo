@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ServiceModel.Configuration;
 
-namespace WcfMessageInterceptor
+namespace MessageInterceptor
 {
     public class CustomInspectorBehaviorExtension : BehaviorExtensionElement
     {

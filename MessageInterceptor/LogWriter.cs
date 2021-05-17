@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace WcfMessageInterceptor
+namespace MessageInterceptor
 {
     public class LogWriter
     {
