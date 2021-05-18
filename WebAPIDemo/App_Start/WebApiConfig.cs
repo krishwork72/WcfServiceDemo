@@ -1,5 +1,4 @@
 ﻿using MessageInterceptor.Filters;
-using System.Net.Http.Formatting;
 using System.Web.Http;
 
 namespace WebAPIDemo
@@ -10,7 +9,6 @@ namespace WebAPIDemo
         {
             // Web API configuration and services
             config.Filters.Add(new ServiceInterceptorAttribute());
-            config.Formatters.Add(new JsonMediaTypeFormatter());
             config.EnableCors();
             // Web API routes
             config.MapHttpAttributeRoutes();
