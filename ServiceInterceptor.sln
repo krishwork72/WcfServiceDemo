@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WcfServiceDemo", "WcfServic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPIDemo", "WebAPIDemo\WebAPIDemo.csproj", "{35A9FA37-1628-477E-BC59-65203E4432B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPIDemo.Core", "WebAPIDemo.Core\WebAPIDemo.Core.csproj", "{60E2E198-20F7-43F9-8A88-8AD6BF8FCB54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPIDemo.Core", "WebAPIDemo.Core\WebAPIDemo.Core.csproj", "{60E2E198-20F7-43F9-8A88-8AD6BF8FCB54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageInterceptor.Core", "MessageInterceptor.Core\MessageInterceptor.Core.csproj", "{04F208A8-F5DA-4284-A1E1-4833822EC05B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageInterceptor.Core", "MessageInterceptor.Core\MessageInterceptor.Core.csproj", "{04F208A8-F5DA-4284-A1E1-4833822EC05B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
