@@ -15,21 +15,21 @@ namespace WebAPIDemo.Controllers
         [HttpGet]
         public IHttpActionResult GetEmployees()
         {
-            var students = new List<Student>()
+            var students = new List<Employee>()
             {
-                new Student(){ Id=1,Name="Krishna"},
-                new Student(){ Id=2, Name="Murari" }
+                new Employee(){ Id=1,Name="Krishna"},
+                new Employee(){ Id=2, Name="Murari" }
             };
             return Ok(students);
         }
         [HttpGet]
         public IHttpActionResult GetEmployeeById(int studentId)
         {
-            var student = new Student() { Id = studentId, Name = "Krishna" };
+            var student = new Employee() { Id = studentId, Name = "Krishna" };
             return Ok(student);
         }
         [HttpPost]
-        public IHttpActionResult SaveEmployee([FromBody] Student student)
+        public IHttpActionResult SaveEmployee([FromBody] Employee student)
         {
             var std = student;
             std.Name ="MR. " +std.Name;

@@ -9,7 +9,7 @@ namespace WebAPIDemo
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-            config.Filters.Add(new InterceptorFilterAttribute());
+            config.Filters.Add(new ServiceInterceptorAttribute());
             config.Formatters.Add(new JsonMediaTypeFormatter());
             config.EnableCors();
             // Web API routes

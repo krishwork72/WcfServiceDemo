@@ -63,7 +63,7 @@
     <Compile Include="CustomServiceBehaviorAttribute.cs" />
     <Compile Include="Configurations\GenericConfigurationElementCollection.cs" />
     <Compile Include="Configurations\ExcludeSetting.cs" />
-    <Compile Include="Filters\InterceptorFilterAttribute.cs" />
+    <Compile Include="Filters\ServiceInterceptorAttribute.cs" />
     <Compile Include="MessageInspector.cs" />
     <Compile Include="Models\HeaderModel.cs" />
     <Compile Include="Models\RequestModel.cs" />
