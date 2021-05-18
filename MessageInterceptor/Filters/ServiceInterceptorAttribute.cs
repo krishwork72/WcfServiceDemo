@@ -11,7 +11,7 @@ using MessageInterceptor.Models;
 
 namespace MessageInterceptor.Filters
 {
-    public class InterceptorFilterAttribute : ActionFilterAttribute, IActionFilter
+    public class ServiceInterceptorAttribute : ActionFilterAttribute, IActionFilter
     {
         private bool ignoreAction = true;
 
@@ -28,7 +28,7 @@ namespace MessageInterceptor.Filters
                 }
                 model.Url = request.RequestUri.AbsoluteUri;
                 model.Method = request.Method.Method;
-                model.Headers = GetRequestHeaders(request);
+                model.Headers = GetHeaders(request);
                 model.Payload = GetPayload(actionContext);
                 LogWriter.Log(model);
             }
@@ -53,7 +53,7 @@ namespace MessageInterceptor.Filters
                 model.Url = actionExecutedContext.Request.RequestUri.AbsoluteUri;
                 model.Method = actionExecutedContext.Request.Method.Method;
                 model.StatusCode = httpResponse.StatusCode;
-                model.Headers = GetResponseHeaders(httpResponse);
+                model.Headers = GetHeaders(httpResponse);
                 model.Payload = httpResponse.Content.ReadAsStringAsync().Result;
                 LogWriter.Log(model);
             }
@@ -100,7 +100,7 @@ namespace MessageInterceptor.Filters
                 ignoreAction = false;
             }
         }
-        private List<HeaderModel> GetRequestHeaders(HttpRequestMessage httpRequest)
+        private List<HeaderModel> GetHeaders(HttpRequestMessage httpRequest)
         {
             List<HeaderModel> headers = new List<HeaderModel>();
             if (httpRequest != null)
@@ -124,7 +124,7 @@ namespace MessageInterceptor.Filters
             }
             return headers;
         }
-        private List<HeaderModel> GetResponseHeaders(HttpResponseMessage httpResponse)
+        private List<HeaderModel> GetHeaders(HttpResponseMessage httpResponse)
         {
             List<HeaderModel> headers = new List<HeaderModel>();
             if (httpResponse != null)
