@@ -5,7 +5,7 @@ using System.ServiceModel.Channels;
 
 namespace WcfServiceDemo
 {
-    public class CheckInterceptor : ICheckInterceptor
+    public class CheckInterceptor : ICheckWcfInterceptor
     {
         public bool DoIntercept(List<HeaderModel> headers, MessageBuffer messageBuffer)
         {

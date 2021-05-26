@@ -4,8 +4,9 @@ using System.ServiceModel.Channels;
 
 namespace MessageInterceptor
 {
-    public interface ICheckInterceptor
+    public interface ICheckWcfInterceptor
     {
         bool DoIntercept(List<HeaderModel> headers, MessageBuffer messageBuffer);
+        
     }
 }

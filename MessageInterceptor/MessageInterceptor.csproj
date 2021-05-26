@@ -60,8 +60,9 @@
     <Compile Include="AssemblyHelper.cs" />
     <Compile Include="CustomInspectorBehaviorExtension.cs" />
     <Compile Include="CustomServiceBehaviorAttribute.cs" />
+    <Compile Include="Filters\ICheckApiInterceptor.cs" />
     <Compile Include="Filters\ServiceInterceptorAttribute.cs" />
-    <Compile Include="ICheckInterceptor.cs" />
+    <Compile Include="ICheckWcfInterceptor.cs" />
     <Compile Include="MessageInspector.cs" />
     <Compile Include="Models\HeaderModel.cs" />
     <Compile Include="Models\Payloads.cs" />

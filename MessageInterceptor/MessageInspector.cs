@@ -114,7 +114,7 @@ namespace MessageInterceptor
         }
         private bool DoIntercept(List<HeaderModel> headers, MessageBuffer messageBuffer)
         {
-            var instance = AssemblyHelper.CreateInstance<ICheckInterceptor>();
+            var instance = AssemblyHelper.CreateInstance<ICheckWcfInterceptor>();
             if (instance == null)
             {
                 return true;

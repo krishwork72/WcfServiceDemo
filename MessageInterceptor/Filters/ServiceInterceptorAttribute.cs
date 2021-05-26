@@ -19,7 +19,8 @@ namespace MessageInterceptor.Filters
             try
             {
                 var headers = GetHeaders(request);
-                if (!DoIntercept(headers))
+                var payload = GetPayload(actionContext);
+                if (!DoIntercept(headers, payload))
                 {
                     return;
                 }
@@ -29,7 +30,7 @@ namespace MessageInterceptor.Filters
                 model.Payloads.Add(new Payloads()
                 {
                     Type = type,
-                    Payload = GetPayload(actionContext)
+                    Payload = payload
                 });
             }
             catch (Exception ex)
@@ -54,7 +55,8 @@ namespace MessageInterceptor.Filters
             try
             {
                 var headers = GetHeaders(httpResponse);
-                if (!DoIntercept(headers))
+                var payload = httpResponse.Content.ReadAsStringAsync().Result;
+                if (!DoIntercept(headers, payload))
                 {
                     return;
                 }
@@ -65,7 +67,7 @@ namespace MessageInterceptor.Filters
                 model.Payloads.Add(new Payloads()
                 {
                     Type = type,
-                    Payload = httpResponse.Content.ReadAsStringAsync().Result
+                    Payload = payload
                 });
             }
             catch (Exception ex)
@@ -149,14 +151,14 @@ namespace MessageInterceptor.Filters
             }
             return headers;
         }
-        private bool DoIntercept(List<HeaderModel> headers)
+        private bool DoIntercept(List<HeaderModel> headers, string payload)
         {
-            var instance = AssemblyHelper.CreateInstance<ICheckInterceptor>();
+            var instance = AssemblyHelper.CreateInstance<ICheckApiInterceptor>();
             if (instance == null)
             {
                 return true;
             }
-            return true;
+            return instance.DoIntercept(headers, payload);
         }
     }
 }
