@@ -1,68 +1,86 @@
-﻿using Newtonsoft.Json;
+﻿using MessageInterceptor.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using MessageInterceptor.Configurations;
-using MessageInterceptor.Models;
 
 namespace MessageInterceptor.Filters
 {
     public class ServiceInterceptorAttribute : ActionFilterAttribute, IActionFilter
     {
-        private bool ignoreAction = true;
-
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var model = new RequestModel();
             var request = actionContext.Request;
+            const string type = "Request";
             try
             {
-                GetIgnoreAction(actionContext.ActionDescriptor);
-                if (ignoreAction)
+                var headers = GetHeaders(request);
+                if (!DoIntercept(headers))
                 {
                     return;
                 }
                 model.Url = request.RequestUri.AbsoluteUri;
                 model.Method = request.Method.Method;
-                model.Headers = GetHeaders(request);
-                model.Payload = GetPayload(actionContext);
-                LogWriter.Log(model);
+                model.Headers = headers;
+                model.Payloads.Add(new Payloads()
+                {
+                    Type = type,
+                    Payload = GetPayload(actionContext)
+                });
+            }
+            catch (Exception ex)
+            {
+                model.Exceptions.Add(new ServiceException()
+                {
+                    Type = type,
+                    Exception = ex
+                });
             }
             finally
             {
-                ignoreAction = true;
                 base.OnActionExecuting(actionContext);
             }
-
+            LogWriter.Log(model);
         }
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
             var model = new RequestModel();
             var httpResponse = actionExecutedContext.Response;
+            const string type = "Response";
             try
             {
-                GetIgnoreAction(actionExecutedContext.Request.GetActionDescriptor());
-                if (ignoreAction)
+                var headers = GetHeaders(httpResponse);
+                if (!DoIntercept(headers))
                 {
                     return;
                 }
                 model.Url = actionExecutedContext.Request.RequestUri.AbsoluteUri;
                 model.Method = actionExecutedContext.Request.Method.Method;
                 model.StatusCode = httpResponse.StatusCode;
-                model.Headers = GetHeaders(httpResponse);
-                model.Payload = httpResponse.Content.ReadAsStringAsync().Result;
-                LogWriter.Log(model);
+                model.Headers = headers;
+                model.Payloads.Add(new Payloads()
+                {
+                    Type = type,
+                    Payload = httpResponse.Content.ReadAsStringAsync().Result
+                });
+            }
+            catch (Exception ex)
+            {
+                model.Exceptions.Add(new ServiceException()
+                {
+                    Type = type,
+                    Exception = ex
+                });
             }
             finally
             {
-                ignoreAction = true;
                 base.OnActionExecuted(actionExecutedContext);
             }
-
+            LogWriter.Log(model);
         }
         private string GetPayload(HttpActionContext actionContext)
         {
@@ -79,26 +97,9 @@ namespace MessageInterceptor.Filters
                     {
                         sb.Append(",");
                     }
-
                 }
             }
             return sb.ToString();
-        }
-        private void GetIgnoreAction(HttpActionDescriptor actionDescriptor)
-        {
-            var excludeSettings = ExcludeSettingFactory.ExcludeSettings;
-            if (excludeSettings.Count == 0 || string.IsNullOrEmpty(actionDescriptor.ActionName))
-            {
-                LogWriter.Log($"The exclude method setting count:{excludeSettings.Count}");
-                ignoreAction = false;
-                return;
-            }
-            var ignoreActionSetting = excludeSettings.FirstOrDefault(x =>
-                               x.MethodName.Equals(actionDescriptor.ActionName, StringComparison.OrdinalIgnoreCase));
-            if (ignoreActionSetting == null)
-            {
-                ignoreAction = false;
-            }
         }
         private List<HeaderModel> GetHeaders(HttpRequestMessage httpRequest)
         {
@@ -147,6 +148,15 @@ namespace MessageInterceptor.Filters
                 }
             }
             return headers;
+        }
+        private bool DoIntercept(List<HeaderModel> headers)
+        {
+            var instance = AssemblyHelper.CreateInstance<ICheckInterceptor>();
+            if (instance == null)
+            {
+                return true;
+            }
+            return true;
         }
     }
 }
