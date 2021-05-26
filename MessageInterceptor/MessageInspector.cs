@@ -58,6 +58,9 @@ namespace MessageInterceptor
             const string type = "Response";
             try
             {
+                if (model == null)
+                    return;
+
                 var messageCopy = buffer.CreateMessage();
                 model.StatusCode = context.OutgoingResponse.StatusCode;
                 model.Payloads.Add(new Payloads()
