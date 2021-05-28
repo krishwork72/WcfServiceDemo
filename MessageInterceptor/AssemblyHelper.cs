@@ -15,7 +15,7 @@ namespace MessageInterceptor
         }
         public static I CreateInstance<I>() where I : class
         {
-            var assemblyRootPath = AppDomain.CurrentDomain.RelativeSearchPath;
+            var assemblyRootPath = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             var assemblyInfo = GetAssemblyInfo();
             if (assemblyInfo == null)
                 return null;
