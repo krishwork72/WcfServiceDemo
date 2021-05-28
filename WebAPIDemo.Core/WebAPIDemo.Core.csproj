@@ -8,5 +8,9 @@
     <PackageReference Include="MessageInterceptor.Core" Version="1.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MessageInterceptor.Core\MessageInterceptor.Core.csproj" />
+  </ItemGroup>
+
 
 </Project>

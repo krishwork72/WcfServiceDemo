@@ -1,13 +1,10 @@
 ﻿using MessageInterceptor.Core.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -15,74 +12,100 @@ namespace MessageInterceptor.Core
 {
     public class ServiceInterceptorAttribute : Attribute, IActionFilter
     {
-        private readonly IOptions<List<ExcludeSetting>> excludeSettings;
-        private bool ignoreAction = true;
-        public ServiceInterceptorAttribute(IOptions<List<ExcludeSetting>>  excludeSettings)
+        private readonly AssemblyHelper assemblyHelper;
+        private const string RequestPayload = "RequestPayload";
+
+        public ServiceInterceptorAttribute(IOptions<AssemblyInfo> options)
         {
-            this.excludeSettings = excludeSettings;
+            this.assemblyHelper = new AssemblyHelper(options);
         }
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            const string Type = "Request";
             var httpContext = filterContext.HttpContext;
+            RequestModel model = null;
             try
             {
-                GetIgnoreAction(filterContext.ActionDescriptor);
-                if (ignoreAction)
-                {
-                    LogWriter.Log("Skipping.");
+                var headers = GetHeaders(httpContext.Request);
+                var payload = GetPayload(filterContext);
+                if (!DoIntercept(headers, payload))
                     return;
-                }
-                var model = new RequestModel();
+
+                model = new RequestModel();
                 model.Schema = httpContext.Request.Scheme;
                 model.Host = httpContext.Request.Host.Value;
                 model.Url = httpContext.Request.Path.Value;
                 model.Method = httpContext.Request.Method;
                 model.Headers = GetHeaders(httpContext.Request);
-                model.Payload = GetPayload(filterContext);
-                LogWriter.Log(model);
+                model.Payloads.Add(new Payloads()
+                {
+                    Type = Type,
+                    Payload = GetPayload(filterContext)
+                });
             }
-            finally {}
+            catch (Exception ex)
+            {
+                model?.Exceptions.Add(new ServiceException()
+                {
+                    Type = Type,
+                    Exception = ex
+                });
+            }
+            finally
+            {
+                // Returns:
+                //     true if the element is successfully removed; otherwise, false. This method also
+                //     returns false if key was not found in the Properties
+                filterContext.ActionDescriptor.Properties.Remove(RequestPayload);
+                // Add
+                filterContext.ActionDescriptor.Properties.Add(RequestPayload, model);
+            }
         }
         public void OnActionExecuted(ActionExecutedContext filterContext)
         {
             var httpContext = filterContext.HttpContext;
+            const string Type = "Response";
+            RequestModel model = null;
             try
             {
-                GetIgnoreAction(filterContext.ActionDescriptor);
-                if (ignoreAction)
-                {
-                    LogWriter.Log("Skipping.");
+                if (filterContext.ActionDescriptor.Properties.TryGetValue(RequestPayload, out object _requestModel))
+                    model = (RequestModel)_requestModel;
+
+                if (model == null)
                     return;
-                }
-                var model = new RequestModel();
-                model.Schema = httpContext.Request.Scheme;
-                model.Host = httpContext.Request.Host.Value;
-                model.Url = httpContext.Request.Path.Value;
-                model.Method = httpContext.Request.Method;
+
                 model.StatusCode = (HttpStatusCode)httpContext.Response.StatusCode;
-                model.Headers = GetHeaders(httpContext.Response);
-                model.Payload = GetPayload(filterContext);
-                LogWriter.Log(model);
+                model.Payloads.Add(new Payloads()
+                {
+                    Type = Type,
+                    Payload = GetPayload(filterContext)
+                });
             }
-            finally { }
+            catch (Exception ex)
+            {
+                model?.Exceptions.Add(new ServiceException()
+                {
+                    Type = Type,
+                    Exception = ex
+                });
+            }
+            finally
+            {
+                try
+                {
+                    LogWriter.Log(model);
+                }
+                catch { }
+            }
         }
-        private void GetIgnoreAction(ActionDescriptor actionDescriptor)
+        private bool DoIntercept(List<HeaderModel> headers, string payload)
         {
-            var excludes = excludeSettings.Value;
-           
-            if (excludes.Count == 0 )
+            var instance = assemblyHelper.CreateInstance<ICheckInterceptor>();
+            if (instance == null)
             {
-                LogWriter.Log($"The exclude method setting count:{excludes.Count}");
-                ignoreAction = false;
-                return;
+                return true;
             }
-            var actionName = ((ControllerActionDescriptor)actionDescriptor).ActionName;
-            var ignoreActionSetting = excludes.FirstOrDefault(x 
-                                    =>x.ActionName.Equals(actionName, StringComparison.OrdinalIgnoreCase));
-            if (ignoreActionSetting == null)
-            {
-                ignoreAction = false;
-            }
+            return instance.DoIntercept(headers, payload);
         }
         private string GetPayload(ActionExecutingContext filterContext)
         {
@@ -137,32 +160,6 @@ namespace MessageInterceptor.Core
                 sb.Append($"{JsonConvert.SerializeObject(filterContext.Result)}");
             }
             return sb.ToString();
-        }
-        private List<HeaderModel> GetHeaders(HttpResponse httpResponse)
-        {
-            List<HeaderModel> headers = new List<HeaderModel>();
-            if (httpResponse != null)
-            {
-                headers.Add(new HeaderModel()
-                {
-                    Name = "ContentType",
-                    Value = httpResponse.ContentType
-                });
-                headers.Add(new HeaderModel()
-                {
-                    Name = "ContentLength",
-                    Value = Convert.ToString(httpResponse.ContentLength)
-                });
-                foreach (var header in httpResponse.Headers)
-                {
-                    headers.Add(new HeaderModel()
-                    {
-                        Name = header.Key,
-                        Value = String.Join(",", header.Value)
-                    });
-                }
-            }
-            return headers;
         }
     }
 }
