@@ -12,6 +12,12 @@ namespace MessageInterceptor
 {
     internal class MessageInspector : IDispatchMessageInspector
     {
+        private readonly ICheckWcfInterceptor checkInterceptor;
+
+        public MessageInspector()
+        {
+            checkInterceptor = AssemblyHelper.CreateInstance<ICheckWcfInterceptor>();
+        }
         #region IDispatchMessageInspector Members
         public object AfterReceiveRequest(ref Message request, IClientChannel channel,
             InstanceContext instanceContext)
@@ -117,12 +123,11 @@ namespace MessageInterceptor
         }
         private bool DoIntercept(List<HeaderModel> headers, MessageBuffer messageBuffer)
         {
-            var instance = AssemblyHelper.CreateInstance<ICheckWcfInterceptor>();
-            if (instance == null)
+            if (checkInterceptor == null)
             {
                 return true;
             }
-            return instance.DoIntercept(headers, messageBuffer);
+            return checkInterceptor.DoIntercept(headers, messageBuffer);
         }
         #region GetPayload
         private string GetPayload(MessageBuffer messageBuffer)

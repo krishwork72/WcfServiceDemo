@@ -12,6 +12,12 @@ namespace MessageInterceptor.Filters
     public class ServiceInterceptorAttribute : ActionFilterAttribute, IActionFilter
     {
         private const string RequestPayload = "RequestPayload";
+        private readonly ICheckApiInterceptor checkInterceptor;
+
+        public ServiceInterceptorAttribute()
+        {
+            checkInterceptor = AssemblyHelper.CreateInstance<ICheckApiInterceptor>();
+        }
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             RequestModel model = null;
@@ -127,12 +133,11 @@ namespace MessageInterceptor.Filters
         }
         private bool DoIntercept(List<HeaderModel> headers, string payload)
         {
-            var instance = AssemblyHelper.CreateInstance<ICheckApiInterceptor>();
-            if (instance == null)
+            if (checkInterceptor == null)
             {
                 return true;
             }
-            return instance.DoIntercept(headers, payload);
+            return checkInterceptor.DoIntercept(headers, payload);
         }
     }
 }

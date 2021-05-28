@@ -10,7 +10,7 @@ namespace WcfServiceDemo
         public bool DoIntercept(List<HeaderModel> headers, MessageBuffer messageBuffer)
         {
             var message = messageBuffer.CreateMessage();
-            if (message.IsEmpty)
+            if (!message.IsEmpty)
             {
                 //do logic here
             }
