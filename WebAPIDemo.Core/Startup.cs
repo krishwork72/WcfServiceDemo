@@ -24,8 +24,7 @@ namespace WebAPIDemo.Core
             services.AddControllers(option=> {
                 option.Filters.Add<ServiceInterceptorAttribute>();
             });
-            services.Configure<List<ExcludeSetting>>(options => 
-                                            Configuration.GetSection("ExcludeSettings").Bind(options));
+            services.Configure<AssemblyInfo>(options => Configuration.GetSection("AssemblyInfo").Bind(options));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

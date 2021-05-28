@@ -11,9 +11,10 @@ namespace MessageInterceptor.Filters
 {
     public class ServiceInterceptorAttribute : ActionFilterAttribute, IActionFilter
     {
+        private const string RequestPayload = "RequestPayload";
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
-            var model = new RequestModel();
+            RequestModel model = null;
             var request = actionContext.Request;
             const string type = "Request";
             try
@@ -21,9 +22,9 @@ namespace MessageInterceptor.Filters
                 var headers = GetHeaders(request);
                 var payload = GetPayload(actionContext);
                 if (!DoIntercept(headers, payload))
-                {
                     return;
-                }
+
+                model = new RequestModel();
                 model.Url = request.RequestUri.AbsoluteUri;
                 model.Method = request.Method.Method;
                 model.Headers = headers;
@@ -35,7 +36,7 @@ namespace MessageInterceptor.Filters
             }
             catch (Exception ex)
             {
-                model.Exceptions.Add(new ServiceException()
+                model?.Exceptions.Add(new ServiceException()
                 {
                     Type = type,
                     Exception = ex
@@ -43,36 +44,33 @@ namespace MessageInterceptor.Filters
             }
             finally
             {
+                actionContext.Request.Properties.Add(RequestPayload, model);
                 base.OnActionExecuting(actionContext);
             }
-            LogWriter.Log(model);
         }
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
-            var model = new RequestModel();
+            RequestModel model = null;
             var httpResponse = actionExecutedContext.Response;
             const string type = "Response";
             try
             {
-                var headers = GetHeaders(httpResponse);
-                var payload = httpResponse.Content.ReadAsStringAsync().Result;
-                if (!DoIntercept(headers, payload))
-                {
+                if (actionExecutedContext.Request.Properties.TryGetValue(RequestPayload, out object _requestModel))
+                    model = (RequestModel)_requestModel;
+
+                if (model == null)
                     return;
-                }
-                model.Url = actionExecutedContext.Request.RequestUri.AbsoluteUri;
-                model.Method = actionExecutedContext.Request.Method.Method;
+
                 model.StatusCode = httpResponse.StatusCode;
-                model.Headers = headers;
                 model.Payloads.Add(new Payloads()
                 {
                     Type = type,
-                    Payload = payload
+                    Payload = httpResponse.Content.ReadAsStringAsync().Result
                 });
             }
             catch (Exception ex)
             {
-                model.Exceptions.Add(new ServiceException()
+                model?.Exceptions.Add(new ServiceException()
                 {
                     Type = type,
                     Exception = ex
@@ -117,30 +115,6 @@ namespace MessageInterceptor.Filters
                     });
                 }
                 foreach (var header in httpRequest.Content.Headers)
-                {
-                    headers.Add(new HeaderModel()
-                    {
-                        Name = header.Key,
-                        Value = String.Join(",", header.Value)
-                    });
-                }
-            }
-            return headers;
-        }
-        private List<HeaderModel> GetHeaders(HttpResponseMessage httpResponse)
-        {
-            List<HeaderModel> headers = new List<HeaderModel>();
-            if (httpResponse != null)
-            {
-                foreach (var header in httpResponse.Headers)
-                {
-                    headers.Add(new HeaderModel()
-                    {
-                        Name = header.Key,
-                        Value = String.Join(",", header.Value)
-                    });
-                }
-                foreach (var header in httpResponse.Content.Headers)
                 {
                     headers.Add(new HeaderModel()
                     {

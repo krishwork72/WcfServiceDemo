@@ -21,7 +21,7 @@ namespace MessageInterceptor
                 return null;
 
             Assembly assembly;
-            string assemblyPath = assemblyRootPath + $"\\{assemblyInfo.Item2}";
+            string assemblyPath = $"{assemblyRootPath}{ Path.DirectorySeparatorChar}{assemblyInfo.Item2}";
             if (File.Exists(assemblyPath))
                 assembly = Assembly.LoadFrom(assemblyPath);
             else
