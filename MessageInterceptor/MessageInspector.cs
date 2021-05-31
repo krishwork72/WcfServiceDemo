@@ -85,9 +85,9 @@ namespace MessageInterceptor
             }
             finally
             {
+                LogWriter.Log(model);
                 reply = buffer.CreateMessage();
             }
-            LogWriter.Log(model);
         }
         #endregion
         #region Reading request url

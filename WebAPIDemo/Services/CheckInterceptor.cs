@@ -6,10 +6,10 @@ namespace WebAPIDemo.Services
 {
     public class CheckInterceptor : ICheckApiInterceptor
     {
-        public bool DoIntercept(List<HeaderModel> headers, string payload)
+        public bool DoIntercept(List<HeaderModel> headers, Dictionary<string, object> payloads)
         {
             //in case of get action, payoad will empty 
-            if (string.IsNullOrEmpty(payload))
+            if (payloads.Count>0)
             {
                 //do logic here
             }
