@@ -14,10 +14,12 @@ namespace MessageInterceptor.Core
     {
         private readonly AssemblyHelper assemblyHelper;
         private const string RequestPayload = "RequestPayload";
+        private readonly ICheckInterceptor checkInterceptor;
 
         public ServiceInterceptorAttribute(IOptions<AssemblyInfo> options)
         {
             this.assemblyHelper = new AssemblyHelper(options);
+            checkInterceptor= assemblyHelper.CreateInstance<ICheckInterceptor>();
         }
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -28,7 +30,7 @@ namespace MessageInterceptor.Core
             {
                 var headers = GetHeaders(httpContext.Request);
                 var payload = GetPayload(filterContext);
-                if (!DoIntercept(headers, payload))
+                if (!DoIntercept(headers, filterContext.ActionArguments))
                     return;
 
                 model = new RequestModel();
@@ -98,14 +100,13 @@ namespace MessageInterceptor.Core
                 catch { }
             }
         }
-        private bool DoIntercept(List<HeaderModel> headers, string payload)
+        private bool DoIntercept(List<HeaderModel> headers, IDictionary<string, object> payloads)
         {
-            var instance = assemblyHelper.CreateInstance<ICheckInterceptor>();
-            if (instance == null)
+            if (checkInterceptor == null)
             {
                 return true;
             }
-            return instance.DoIntercept(headers, payload);
+            return checkInterceptor.DoIntercept(headers, payloads);
         }
         private string GetPayload(ActionExecutingContext filterContext)
         {

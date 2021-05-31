@@ -26,8 +26,7 @@ namespace MessageInterceptor.Filters
             try
             {
                 var headers = GetHeaders(request);
-                var payload = GetPayload(actionContext);
-                if (!DoIntercept(headers, payload))
+                if (!DoIntercept(headers, actionContext.ActionArguments))
                     return;
 
                 model = new RequestModel();
@@ -37,7 +36,7 @@ namespace MessageInterceptor.Filters
                 model.Payloads.Add(new Payloads()
                 {
                     Type = type,
-                    Payload = payload
+                    Payload = GetPayload(actionContext)
                 });
             }
             catch (Exception ex)
@@ -73,6 +72,7 @@ namespace MessageInterceptor.Filters
                     Type = type,
                     Payload = httpResponse.Content.ReadAsStringAsync().Result
                 });
+
             }
             catch (Exception ex)
             {
@@ -84,9 +84,9 @@ namespace MessageInterceptor.Filters
             }
             finally
             {
+                LogWriter.Log(model);
                 base.OnActionExecuted(actionExecutedContext);
             }
-            LogWriter.Log(model);
         }
         private string GetPayload(HttpActionContext actionContext)
         {
@@ -131,13 +131,13 @@ namespace MessageInterceptor.Filters
             }
             return headers;
         }
-        private bool DoIntercept(List<HeaderModel> headers, string payload)
+        private bool DoIntercept(List<HeaderModel> headers, Dictionary<string, object> payloads)
         {
             if (checkInterceptor == null)
             {
                 return true;
             }
-            return checkInterceptor.DoIntercept(headers, payload);
+            return checkInterceptor.DoIntercept(headers, payloads);
         }
     }
 }

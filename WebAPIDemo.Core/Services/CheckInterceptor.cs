@@ -5,9 +5,9 @@ namespace WebAPIDemo.Core.Services
 {
     public class CheckInterceptor : ICheckInterceptor
     {
-        public bool DoIntercept(List<HeaderModel> headers, string payload)
+        public bool DoIntercept(List<HeaderModel> headers, IDictionary<string, object> payloads)
         {
-            if (string.IsNullOrEmpty(payload))
+            if (payloads.Count>0)
             {
                 //logic here
             }

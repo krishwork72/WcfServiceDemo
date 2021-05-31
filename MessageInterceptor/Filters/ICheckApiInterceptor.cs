@@ -5,6 +5,6 @@ namespace MessageInterceptor.Filters
 {
     public interface ICheckApiInterceptor
     {
-        bool DoIntercept(List<HeaderModel> headers, string payload);
+        bool DoIntercept(List<HeaderModel> headers, Dictionary<string, object> payloads);
     }
 }
